@@ -203,7 +203,7 @@ jobs:
             --config=stamp \
             --user_kmi_symbol_lists=//msm-kernel:android/abi_gki_aarch64_qcom \
             --ignore_missing_projects \
-            -o "$(pwd)/out")
+            -o "$(pwd)/out"
 
       - name: Create ZIP Package
         working-directory: builds/${{ env.ROOT_DIR }}
