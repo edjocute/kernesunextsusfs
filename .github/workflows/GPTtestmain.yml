@@ -230,6 +230,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: builds/${{ env.ROOT_DIR }}/${{ env.zip_name }}
+          tag_name: v${{ github.run_id }}-$(date +'%Y.%m.%d-%H%M%S')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
