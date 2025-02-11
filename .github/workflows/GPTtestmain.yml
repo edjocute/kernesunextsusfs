@@ -87,9 +87,8 @@ jobs:
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@github.com"
           # Verify installation
-          repo --version
+          #repo --version
 
-      # --- Prepare the build directory ---
       - name: Configure Build Directory
         id: build_dir
         run: |
@@ -99,7 +98,6 @@ jobs:
           mkdir -p "builds/${ROOT_DIR}"
           echo "Build directory set to builds/${ROOT_DIR}"
 
-      # --- Clone repositories ---
       - name: Clone Required Repositories
         working-directory: builds/${{ env.ROOT_DIR }}
         run: |
@@ -120,7 +118,6 @@ jobs:
           repo sync -c -j"$(nproc)" --force-sync --no-clone-bundle --no-tags
           rm -rf ./kernel_platform/common/android/abi_gki_protected_exports_*
 
-      # --- Setup KernelSU ---
       - name: Setup KernelSU (Submodule Integration)
         working-directory: builds/${{ env.ROOT_DIR }}/kernel_platform/oneplus12_v/kernel_platform
         run: |
@@ -135,7 +132,6 @@ jobs:
           echo "KSUVER=${KSU_VERSION}" >> $GITHUB_ENV
           sed -i "s/DKSU_VERSION=16/DKSU_VERSION=${KSU_VERSION}/" Makefile
 
-      # --- Setup SUSFS patches and files ---
       - name: Setup SUSFS
         working-directory: builds/${{ env.ROOT_DIR }}/kernel_platform/oneplus12_v/kernel_platform
         run: |
@@ -170,7 +166,6 @@ jobs:
           git add -A && git commit -m "BUILD Kernel (SUSFS setup)" || true
           git rm --cached KernelSU-Next || true
 
-      # --- Configure Kernel ---
       - name: Configure Kernel
         working-directory: builds/${{ env.ROOT_DIR }}/kernel_platform/oneplus12_v/kernel_platform
         run: |
