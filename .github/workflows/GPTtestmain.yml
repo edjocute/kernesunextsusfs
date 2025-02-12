@@ -218,8 +218,12 @@ jobs:
         working-directory: builds/${{ env.ROOT_DIR }}
         run: |
           set -euxo pipefail
-          cp kernel_platform/oneplus12_v/kernel_platform/out/dist/Image AnyKernel3/Image
-          cp kernel_platform/oneplus12_v/kernel_platform/out/dist/Image.lz4 AnyKernel3/Image.lz4
+          # Make sure the AnyKernel3 directory exists
+          mkdir -p AnyKernel3
+          #Create image file in the directory, if it doesn't exist.
+          touch AnyKernel3/Image
+
+          cp kernel_platform/oneplus12_v/kernel_platform/out/dist/Image AnyKernel3/Image || { echo "Error copying Image file"; exit 1; }
           cd AnyKernel3
           ZIP_NAME="Cabage-OP12-SUSFS-$(date +'%Y-%m-%d-%H-%M-%S').zip"
           echo "Creating zip file $ZIP_NAME..."
@@ -234,8 +238,8 @@ jobs:
       - name: Release Kernel
         uses: softprops/action-gh-release@v1
         with:
-          files: builds/${{ env.ROOT_DIR_PREFIX }}-*/Your-Zip-File.zip
-          tag_name: v13274502827-${{ env.CURRENT_TIMESTAMP }}
+          files: builds/${{ env.ROOT_DIR }}/${{ env.zip_name }} # Or use ROOT_DIR_PREFIX alternative
+          tag_name: v13274502827-${{ steps.timestamp.outputs.CURRENT_TIMESTAMP }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
       # --- Upload Build Logs for Diagnostics ---
@@ -248,3 +252,4 @@ jobs:
             builds/${{ env.ROOT_DIR }}/kernel_platform/oneplus12_v/kernel_platform/out/*.log
             builds/${{ env.ROOT_DIR }}/kernel_platform/oneplus12_v/kernel_platform/**/*.rej
           retention-days: 5
+          if-no-files-found: error # or 'warn' or 'ignore'
