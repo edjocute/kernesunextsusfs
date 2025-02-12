@@ -207,8 +207,12 @@ jobs:
           CONFIG_KSU_SUSFS_SUS_SU=y
           CONFIG_TMPFS_XATTR=y
           EOF
+
+          # Find the relative path to the kernel source root
+          KERNEL_ROOT=$(git rev-parse --show-toplevel)
+
           # Merge SUSFS configuration settings
-          ./scripts/kconfig/merge_config.sh -m -O . ./common/arch/arm64/configs/gki_defconfig susfs.config
+          $KERNEL_ROOT/scripts/kconfig/merge_config.sh -m -O $KERNEL_ROOT ./common/arch/arm64/configs/gki_defconfig susfs.config
 
           #Remove defconfig check
           sed -i '2s/check_defconfig//' ./common/build.config.gki
