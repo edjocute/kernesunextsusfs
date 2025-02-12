@@ -237,13 +237,19 @@ jobs:
         id: timestamp
         run: echo "CURRENT_TIMESTAMP=$(date -u +'%Y.%m.%d-%H%M%S')" >> $GITHUB_ENV
 
-      - name: Release Kernel
+      - name: Create Release
+        id: create_release
         uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # You must define GITHUB_TOKEN secret
         with:
           files: builds/${{ env.ROOT_DIR }}/${{ env.zip_name }}
-          tag_name: v1.0.0-OP12-A15-${{ steps.timestamp.outputs.CURRENT_TIMESTAMP }} # Using semantic versioning
-          token: ${{ secrets.GITHUB_TOKEN }}
-
+          tag_name: ${{ env.KSUVER }}-${{ env.ROOT_DIR_PREFIX }} # or just ${{ env.KSUVER }} if you will put the device/build info into release name.
+          name: Release ${{ env.ROOT_DIR_PREFIX }} ${{ env.zip_name }} #optional: Release name
+          body: |
+             Release for ${{ env.ROOT_DIR_PREFIX }} based on branch ${{ env.BRANCH }}
+             KSU Version: ${{ env.KSUVER }}
+             Timestamp: ${{ env.CURRENT_TIMESTAMP }}
       # --- Upload Build Logs for Diagnostics ---
       - name: Upload Build Logs
         uses: actions/upload-artifact@v4
