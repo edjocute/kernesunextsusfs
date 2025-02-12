@@ -240,8 +240,8 @@ jobs:
       - name: Release Kernel
         uses: softprops/action-gh-release@v1
         with:
-          files: builds/${{ env.ROOT_DIR }}/${{ env.zip_name }} # Or use ROOT_DIR_PREFIX alternative
-          tag_name: v13274502827-${{ steps.timestamp.outputs.CURRENT_TIMESTAMP }}
+          files: builds/${{ env.ROOT_DIR }}/${{ env.zip_name }}
+          tag_name: v1.0.0-OP12-A15-${{ steps.timestamp.outputs.CURRENT_TIMESTAMP }} # Using semantic versioning
           token: ${{ secrets.GITHUB_TOKEN }}
 
       # --- Upload Build Logs for Diagnostics ---
