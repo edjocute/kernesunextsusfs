@@ -188,12 +188,17 @@ jobs:
           
           # Remove defconfig check
           sed -i '2s/check_defconfig//' ./common/build.config.gki
+          
+          # Run sed commands for modifications
+          sed -i "/stable_scmversion_cmd/s/-maybe-dirty//g" ./build/kernel/kleaf/impl/stamp.bzl
+          sed -i 's/-dirty//' ./common/scripts/setlocalversion
+          sed -i 's/-dirty//' ./msm-kernel/scripts/setlocalversion
 
       - name: Build Kernel
         working-directory: builds/${{ env.ROOT_DIR }}/kernel_platform/oneplus13r_v/
         run: |
           cd kernel_platform
-          mkdir out
+          mkdir -p out
           export PATH="/usr/lib/ccache:$PATH"
           # Modified build command with correct syntax
           ./build_with_bazel.py \
