@@ -142,7 +142,7 @@ jobs:
           git rm --cached KernelSU-Next || true
 
       - name: Configure Kernel
-        working-directory: ${{ env.BUILD_DIR }}/${{ env.KERNEL_DIR }}/kernel_platform/kernel_platform
+        working-directory: ${{ env.BUILD_DIR }}/${{ env.KERNEL_DIR }}/kernel_platform
         run: |
           set -euxo pipefail
           # Add SUSFS configuration settings
