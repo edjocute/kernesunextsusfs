@@ -221,7 +221,7 @@ jobs:
 
       - name: Upload Build Logs
         uses: actions/upload-artifact@v4
-        if: always()
+        if: ${{ always() && failure() }}
         with:
           name: build-logs
           path: |
