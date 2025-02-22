@@ -19,10 +19,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Important for submodules
-      - name: Checkout repository with submodules
-        uses: actions/checkout@v3
-        with:
-          submodules: true
+          submodules: recursive
 
 
       - name: Free Disk Space & Update APT
@@ -107,25 +104,28 @@ jobs:
 
           rm -rf ./kernel_platform/common/android/abi_gki_protected_exports_*
 
+      - name: Initialize and Update Submodules
+        run: |
+          set -euxo pipefail
+          git submodule update --init --recursive
+
       - name: Setup KernelSU (Submodule Integration)
         working-directory: ${{ env.BUILD_DIR }}/${{ env.KERNEL_DIR }}/kernel_platform
         run: |
           set -euxo pipefail
-          # (Optional) If your submodule setup script has additional initialization, you might run it here:
-          # ./KernelSU-Next/kernel/setup.sh next
-    
           # Ensure submodules are updated (if necessary)
           git submodule update --init --recursive
     
-          # Navigate to the KernelSU directory inside the submodule
-          cd KernelSU-Next/kernel
-    
-          # Obtain the current version from Git tags
-          KSU_VERSION=$(git describe --tags --abbrev=0)
-          echo "KSUVER=${KSU_VERSION}" >> $GITHUB_ENV
-    
-          # Update the Makefile with the correct version
-          sed -i "s/DKSU_VERSION=16/DKSU_VERSION=${KSU_VERSION}/" Makefile
+          # Check if KernelSU-Next exists before proceeding
+          if [ -d "KernelSU-Next/kernel" ]; then
+            cd KernelSU-Next/kernel
+            KSU_VERSION=$(git describe --tags --abbrev=0)
+            echo "KSUVER=${KSU_VERSION}" >> $GITHUB_ENV
+            sed -i "s/DKSU_VERSION=16/DKSU_VERSION=${KSU_VERSION}/" Makefile
+          else
+            echo "Error: KernelSU-Next directory not found!"
+            exit 1
+          fi
 
       - name: Setup SUSFS
         working-directory: ${{ env.BUILD_DIR }}/${{ env.KERNEL_DIR }}/kernel_platform
