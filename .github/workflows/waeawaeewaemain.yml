@@ -79,7 +79,7 @@ jobs:
           set -euxo pipefail
           git clone --recursive https://github.com/TheWildJames/AnyKernel3.git -b "$BRANCH"
           git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-android14-6.1
-          git clone https://github.com/WildPlusKernel/kernel_patches.git
+          git clone https://github.com/cabagekiller/kernel_patches.git
 
       - name: Setup Kernel Source
         working-directory: ${{ env.BUILD_DIR }}
@@ -120,11 +120,7 @@ jobs:
           SUSFS_PATCHES="../../../susfs4ksu/kernel_patches"
           KERNEL_PATCHES="../../../kernel_patches"
           KSU_NEXT="KernelSU-Next"
-          echo "SUSFS_PATCHES=$SUSFS_PATCHES" >> $GITHUB_ENV
-          echo "KERNEL_PATCHES=$KERNEL_PATCHES" >> $GITHUB_ENV
-          echo "KSU_NEXT=$KSU_NEXT" >> $GITHUB_ENV
-          echo "REPO_ROOT=$(pwd)" >> $GITHUB_ENV # Store the repository root path
-          echo "CORE_HOOK_PATCH_PATH=${{ env.REPO_ROOT }}/core_hook.c.patch" >> $GITHUB_ENV # Correct path!
+
 
           mkdir -p ./common/fs ./common/include/linux
           cp "${SUSFS_PATCHES}/fs/"* ./common/fs/
@@ -132,16 +128,15 @@ jobs:
           cp "${SUSFS_PATCHES}/KernelSU/10_enable_susfs_for_ksu.patch" "${KSU_NEXT}/"
           cp "${SUSFS_PATCHES}/50_add_susfs_in_gki-android14-6.1.patch" ./common/
           cp "${KERNEL_PATCHES}/69_hide_stuff.patch" ./common/
-          cp "${KERNEL_PATCHES}/${KSU_NEXT}-Implement-SUSFS-v1.5.5-Universal.patch" "${KSU_NEXT}/"
-          cp "${{ env.CORE_HOOK_PATCH_PATH }}" .  # Copy using the correct path!
+          cp "${KERNEL_PATCHES}/ksu-next_susfs-v1.5.5.patch" "${KSU_NEXT}/"
+
 
           cd "${KSU_NEXT}"
-          patch -p1 --forward < "${KSU_NEXT}-Implement-SUSFS-v1.5.5-Universal.patch" || echo "Warning: KernelSU SUSFS patch may have been already applied or failed."
+          patch -p1 --forward < ksu-next_susfs-v1.5.5.patch || echo "Warning: KernelSU SUSFS patch may have been already applied or failed."
           cd ../common
           patch -p1 < 50_add_susfs_in_gki-android14-6.1.patch || echo "Warning: SUSFS patch may have been already applied."
           patch -p1 -F 3 < 69_hide_stuff.patch || echo "Warning: 69_hide_stuff patch may have been already applied."
-          cd "${{ env.REPO_ROOT }}" # Go to the repository root
-          patch -p1 < core_hook.c.patch  # Now this should work!
+
           
 
           sed -i '/obj-$(CONFIG_KSU_SUSFS_SUS_SU) += sus_su.o/d' ./fs/Makefile
