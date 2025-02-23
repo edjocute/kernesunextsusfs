@@ -128,6 +128,7 @@ jobs:
           cp "${SUSFS_PATCHES}/50_add_susfs_in_gki-android14-6.1.patch" ./common/
           cp "${KERNEL_PATCHES}/69_hide_stuff.patch" ./common/
           cp "${KERNEL_PATCHES}/${KSU_NEXT}-Implement-SUSFS-v1.5.5-Universal.patch" "${KSU_NEXT}/"
+           cp core_hook.c.patch .
 
           cd "${KSU_NEXT}"
           patch -p1 --forward < "${KSU_NEXT}-Implement-SUSFS-v1.5.5-Universal.patch" || echo "Warning: KernelSU SUSFS patch may have been already applied or failed."
